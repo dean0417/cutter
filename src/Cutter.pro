@@ -287,7 +287,7 @@ SOURCES += \
     common/TempConfig.cpp \
     common/SvgIconEngine.cpp \
     common/SyntaxHighlighter.cpp \
-    widgets/PseudocodeWidget.cpp \
+    widgets/DecompilerWidget.cpp \
     widgets/VisualNavbar.cpp \
     widgets/GraphView.cpp \
     dialogs/preferences/PreferencesDialog.cpp \
@@ -409,7 +409,7 @@ HEADERS  += \
     common/TempConfig.h \
     common/SvgIconEngine.h \
     common/SyntaxHighlighter.h \
-    widgets/PseudocodeWidget.h \
+    widgets/DecompilerWidget.h \
     widgets/VisualNavbar.h \
     widgets/GraphView.h \
     dialogs/preferences/PreferencesDialog.h \
@@ -519,7 +519,7 @@ FORMS    += \
     dialogs/preferences/AppearanceOptionsWidget.ui \
     dialogs/preferences/GraphOptionsWidget.ui \
     widgets/QuickFilterView.ui \
-    widgets/PseudocodeWidget.ui \
+    widgets/DecompilerWidget.ui \
     widgets/ClassesWidget.ui \
     widgets/VTablesWidget.ui \
     widgets/TypesWidget.ui \

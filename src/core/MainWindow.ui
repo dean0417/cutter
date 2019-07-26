@@ -150,7 +150,7 @@
     <addaction name="separator"/>
     <addaction name="actionFunctions"/>
     <addaction name="actionHexdump"/>
-    <addaction name="actionPseudocode"/>
+    <addaction name="actionDecompiler"/>
     <addaction name="actionOverview"/>
     <addaction name="separator"/>
     <addaction name="actionSearch"/>
@@ -897,12 +897,12 @@
     <string>Graph Overview</string>
    </property>
   </action>
-  <action name="actionPseudocode">
+  <action name="actionDecompiler">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Pseudocode</string>
+    <string>Decompiler</string>
    </property>
   </action>
   <action name="actionConsole">

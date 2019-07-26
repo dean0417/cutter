@@ -1,5 +1,5 @@
-#include "PseudocodeWidget.h"
-#include "ui_PseudocodeWidget.h"
+#include "DecompilerWidget.h"
+#include "ui_DecompilerWidget.h"
 
 #include "common/Configuration.h"
 #include "common/Helpers.h"
@@ -34,9 +34,9 @@ struct DecompiledCodeTextLine
 };
 
 
-PseudocodeWidget::PseudocodeWidget(MainWindow *main, QAction *action) :
-    MemoryDockWidget(MemoryWidgetType::Pseudocode, main, action),
-    ui(new Ui::PseudocodeWidget)
+DecompilerWidget::DecompilerWidget(MainWindow *main, QAction *action) :
+    MemoryDockWidget(MemoryWidgetType::Decompiler, main, action),
+    ui(new Ui::DecompilerWidget)
 {
     ui->setupUi(this);
 
@@ -54,7 +54,7 @@ PseudocodeWidget::PseudocodeWidget(MainWindow *main, QAction *action) :
     });
 
     auto decompilers = Core()->getDecompilers();
-    auto selectedDecompilerId = Config()->getSelectedDecompiler();
+    selectedDecompilerId = Config()->getSelectedDecompiler();
     for (auto dec : decompilers) {
         ui->decompilerComboBox->addItem(dec->getName(), dec->getId());
         if (dec->getId() == selectedDecompilerId) {
@@ -69,17 +69,18 @@ PseudocodeWidget::PseudocodeWidget(MainWindow *main, QAction *action) :
         }
     }
 
-    connect(ui->decompilerComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PseudocodeWidget::decompilerSelected);
+    setWindowTitle(getWindowTitle());
+    connect(ui->decompilerComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &DecompilerWidget::decompilerSelected);
     connectCursorPositionChanged(false);
-    connect(Core(), &CutterCore::seekChanged, this, &PseudocodeWidget::seekChanged);
+    connect(Core(), &CutterCore::seekChanged, this, &DecompilerWidget::seekChanged);
 
     doRefresh(RVA_INVALID);
 }
 
-PseudocodeWidget::~PseudocodeWidget() = default;
+DecompilerWidget::~DecompilerWidget() = default;
 
 
-void PseudocodeWidget::doRefresh(RVA addr)
+void DecompilerWidget::doRefresh(RVA addr)
 {
     if (ui->decompilerComboBox->currentIndex() < 0) {
         return;
@@ -91,7 +92,7 @@ void PseudocodeWidget::doRefresh(RVA addr)
     }
 
     if (addr == RVA_INVALID) {
-        ui->textEdit->setPlainText(tr("Click Refresh to generate Pseudocode from current offset."));
+        ui->textEdit->setPlainText(tr("Click Refresh to decompile from current offset."));
         return;
     }
 
@@ -118,26 +119,26 @@ void PseudocodeWidget::doRefresh(RVA addr)
     }
 }
 
-void PseudocodeWidget::refreshPseudocode()
+void DecompilerWidget::refreshDecompiler()
 {
     doRefresh(Core()->getOffset());
 }
 
-void PseudocodeWidget::decompilerSelected()
+void DecompilerWidget::decompilerSelected()
 {
     Configuration().setSelectedDecompiler(ui->decompilerComboBox->currentData().toString());
 }
 
-void PseudocodeWidget::connectCursorPositionChanged(bool disconnect)
+void DecompilerWidget::connectCursorPositionChanged(bool disconnect)
 {
     if (disconnect) {
-        QObject::disconnect(ui->textEdit, &QPlainTextEdit::cursorPositionChanged, this, &PseudocodeWidget::cursorPositionChanged);
+        QObject::disconnect(ui->textEdit, &QPlainTextEdit::cursorPositionChanged, this, &DecompilerWidget::cursorPositionChanged);
     } else {
-        connect(ui->textEdit, &QPlainTextEdit::cursorPositionChanged, this, &PseudocodeWidget::cursorPositionChanged);
+        connect(ui->textEdit, &QPlainTextEdit::cursorPositionChanged, this, &DecompilerWidget::cursorPositionChanged);
     }
 }
 
-void PseudocodeWidget::cursorPositionChanged()
+void DecompilerWidget::cursorPositionChanged()
 {
     RVA offset = getOffsetAtLine(ui->textEdit->textCursor());
     if (offset != RVA_INVALID && offset != Core()->getOffset()) {
@@ -148,7 +149,7 @@ void PseudocodeWidget::cursorPositionChanged()
     updateSelection();
 }
 
-void PseudocodeWidget::seekChanged()
+void DecompilerWidget::seekChanged()
 {
     if (seekFromCursor) {
         return;
@@ -156,7 +157,7 @@ void PseudocodeWidget::seekChanged()
     updateCursorPosition();
 }
 
-void PseudocodeWidget::updateCursorPosition()
+void DecompilerWidget::updateCursorPosition()
 {
     RVA offset = Core()->getOffset();
     connectCursorPositionChanged(true);
@@ -180,7 +181,7 @@ void PseudocodeWidget::updateCursorPosition()
     connectCursorPositionChanged(false);
 }
 
-QList<DecompiledCodeTextLine>::iterator PseudocodeWidget::findLine(int position)
+QList<DecompiledCodeTextLine>::iterator DecompilerWidget::findLine(int position)
 {
     return std::upper_bound(textLines.begin(), textLines.end(), position,
                             [](int pos, const DecompiledCodeTextLine &line) {
@@ -188,7 +189,7 @@ QList<DecompiledCodeTextLine>::iterator PseudocodeWidget::findLine(int position)
                             });
 }
 
-QList<DecompiledCodeTextLine>::iterator PseudocodeWidget::findLineByOffset(RVA offset)
+QList<DecompiledCodeTextLine>::iterator DecompilerWidget::findLineByOffset(RVA offset)
 {
     auto it = textLines.begin();
     auto candidate = it;
@@ -204,7 +205,7 @@ QList<DecompiledCodeTextLine>::iterator PseudocodeWidget::findLineByOffset(RVA o
     return candidate;
 }
 
-RVA PseudocodeWidget::getOffsetAtLine(const QTextCursor &tc)
+RVA DecompilerWidget::getOffsetAtLine(const QTextCursor &tc)
 {
     auto it = findLine(tc.position());
     if (it == textLines.begin()) {
@@ -214,13 +215,13 @@ RVA PseudocodeWidget::getOffsetAtLine(const QTextCursor &tc)
     return (*it).line.addr;
 }
 
-void PseudocodeWidget::setupFonts()
+void DecompilerWidget::setupFonts()
 {
     QFont font = Config()->getFont();
     ui->textEdit->setFont(font);
 }
 
-void PseudocodeWidget::updateSelection()
+void DecompilerWidget::updateSelection()
 {
     QList<QTextEdit::ExtraSelection> extraSelections;
 
@@ -249,16 +250,21 @@ void PseudocodeWidget::updateSelection()
     ui->textEdit->setExtraSelections(extraSelections);
 }
 
-QString PseudocodeWidget::getWindowTitle() const
+QString DecompilerWidget::getWindowTitle() const
 {
-    return tr("Pseudocode");
+    QString title = tr("Decompiler");
+    if (!selectedDecompilerId.isNull()) {
+        title += QString(" (%1)").arg(selectedDecompilerId);
+    }
+
+    return title;
 }
 
-void PseudocodeWidget::fontsUpdated()
+void DecompilerWidget::fontsUpdated()
 {
     setupFonts();
 }
 
-void PseudocodeWidget::colorsUpdatedSlot()
+void DecompilerWidget::colorsUpdatedSlot()
 {
 }

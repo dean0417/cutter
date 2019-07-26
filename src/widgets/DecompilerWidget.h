@@ -1,5 +1,5 @@
-#ifndef PSEUDOCODEWIDGET_H
-#define PSEUDOCODEWIDGET_H
+#ifndef DecompilerWidget_H
+#define DecompilerWidget_H
 
 #include <memory>
 
@@ -7,7 +7,7 @@
 #include "MemoryDockWidget.h"
 
 namespace Ui {
-class PseudocodeWidget;
+class DecompilerWidget;
 }
 
 class QTextEdit;
@@ -15,24 +15,24 @@ class QSyntaxHighlighter;
 class QTextCursor;
 struct DecompiledCodeTextLine;
 
-class PseudocodeWidget : public MemoryDockWidget
+class DecompilerWidget : public MemoryDockWidget
 {
     Q_OBJECT
 
 public:
-    explicit PseudocodeWidget(MainWindow *main, QAction *action = nullptr);
-    ~PseudocodeWidget();
+    explicit DecompilerWidget(MainWindow *main, QAction *action = nullptr);
+    ~DecompilerWidget();
 
 private slots:
     void fontsUpdated();
     void colorsUpdatedSlot();
-    void refreshPseudocode();
+    void refreshDecompiler();
     void decompilerSelected();
     void cursorPositionChanged();
     void seekChanged();
 
 private:
-    std::unique_ptr<Ui::PseudocodeWidget> ui;
+    std::unique_ptr<Ui::DecompilerWidget> ui;
 
     QSyntaxHighlighter *syntaxHighlighter;
 
@@ -42,6 +42,7 @@ private:
     QList<DecompiledCodeTextLine> textLines;
 
     bool seekFromCursor = false;
+    QString selectedDecompilerId;
 
     void doRefresh(RVA addr);
     void setupFonts();
@@ -63,4 +64,4 @@ private:
     QString getWindowTitle() const override;
 };
 
-#endif // PSEUDOCODEWIDGET_H
+#endif // DecompilerWidget_H
