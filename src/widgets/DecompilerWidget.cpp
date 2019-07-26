@@ -54,7 +54,7 @@ DecompilerWidget::DecompilerWidget(MainWindow *main, QAction *action) :
 
     // TODO Use RefreshDeferrer and remove the refresh button
     connect(ui->refreshButton, &QAbstractButton::clicked, this, [this]() {
-        doRefresh(Core()->getOffset());
+        refreshDecompiler();
     });
 
     auto decompilers = Core()->getDecompilers();
@@ -77,6 +77,7 @@ DecompilerWidget::DecompilerWidget(MainWindow *main, QAction *action) :
     connect(ui->decompilerComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &DecompilerWidget::decompilerSelected);
     connectCursorPositionChanged(false);
     connect(Core(), &CutterCore::seekChanged, this, &DecompilerWidget::seekChanged);
+    connect(Core(), &CutterCore::seekChanged, this, &DecompilerWidget::refreshDecompiler);
 
     doRefresh(RVA_INVALID);
 }
@@ -127,6 +128,9 @@ void DecompilerWidget::doRefresh(RVA addr)
 
 void DecompilerWidget::refreshDecompiler()
 {
+    if (seekFromCursor) {
+        return;
+    }
     if (!refreshDeferrer->attemptRefresh(nullptr)) {
         qDebug() << "NOT REFRESHDEFERER";
         return;
