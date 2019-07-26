@@ -50,6 +50,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="checkBox">
+        <property name="text">
+         <string>Auto refresh</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -70,7 +77,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="decompilerComboBox" />
+       <widget class="QComboBox" name="decompilerComboBox"/>
       </item>
      </layout>
     </item>

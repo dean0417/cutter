@@ -62,6 +62,7 @@ private:
     RVA getOffsetAtLine(const QTextCursor &tc);
 
     QString getWindowTitle() const override;
+    RefreshDeferrer *refreshDeferrer;
 };
 
 #endif // DecompilerWidget_H

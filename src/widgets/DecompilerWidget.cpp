@@ -48,6 +48,10 @@ DecompilerWidget::DecompilerWidget(MainWindow *main, QAction *action) :
     connect(Config(), SIGNAL(fontsUpdated()), this, SLOT(fontsUpdated()));
     connect(Config(), SIGNAL(colorsUpdated()), this, SLOT(colorsUpdatedSlot()));
 
+    refreshDeferrer = createRefreshDeferrer([this]() {
+        refreshDecompiler();
+    });
+
     // TODO Use RefreshDeferrer and remove the refresh button
     connect(ui->refreshButton, &QAbstractButton::clicked, this, [this]() {
         doRefresh(Core()->getOffset());
@@ -88,6 +92,7 @@ void DecompilerWidget::doRefresh(RVA addr)
 
     Decompiler *dec = Core()->getDecompilerById(ui->decompilerComboBox->currentData().toString());
     if (!dec) {
+        qDebug() << "NOT DEC";
         return;
     }
 
@@ -115,12 +120,18 @@ void DecompilerWidget::doRefresh(RVA addr)
             cursor.insertText(line.str + "\n");
         }
         connectCursorPositionChanged(false);
+        qDebug() << "calling seekChanged";
         seekChanged();
     }
 }
 
 void DecompilerWidget::refreshDecompiler()
 {
+    if (!refreshDeferrer->attemptRefresh(nullptr)) {
+        qDebug() << "NOT REFRESHDEFERER";
+        return;
+    }
+    qDebug() << "calling doRefresh";
     doRefresh(Core()->getOffset());
 }
 
@@ -154,11 +165,13 @@ void DecompilerWidget::seekChanged()
     if (seekFromCursor) {
         return;
     }
+    qDebug() << "in seekChanged";
     updateCursorPosition();
 }
 
 void DecompilerWidget::updateCursorPosition()
 {
+    qDebug() << "Seek changed";
     RVA offset = Core()->getOffset();
     connectCursorPositionChanged(true);
 
