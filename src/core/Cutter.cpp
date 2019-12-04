@@ -1210,7 +1210,7 @@ void CutterCore::startDebug()
         offsetPriorDebugging = getOffset();
     }
     currentlyOpenFile = getConfig("file.path");
-    cmd("ood");
+    asyncCmd("ood", debugTask);
     emit registersChanged();
     if (!currentlyDebugging) {
         setConfig("asm.flags", false);
