@@ -544,6 +544,7 @@ RESOURCES += \
     resources.qrc \
     themes/native/native.qrc \
     themes/qdarkstyle/style.qrc \
+    themes/midnight/style.qrc \
     themes/lightstyle/light.qrc
 
 
